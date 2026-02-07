@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电影学习数据库 - Film Study Database</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🎬 电影学习库</h1>
+                <p class="subtitle">Film Study Database</p>
+            </div>
+
+            <nav class="main-nav">
+                <button class="nav-btn active" data-view="dashboard">
+                    <span class="icon">📊</span> 仪表盘
+                </button>
+                <button class="nav-btn" data-view="directors">
+                    <span class="icon">🎬</span> 导演库
+                </button>
+                <button class="nav-btn" data-view="films">
+                    <span class="icon">🎞️</span> 影片库
+                </button>
+                <button class="nav-btn" data-view="plan">
+                    <span class="icon">📅</span> 观影计划
+                </button>
+                <button class="nav-btn" data-view="awards">
+                    <span class="icon">🏆</span> 奖项筛选
+                </button>
+            </nav>
+
+            <div class="stats-panel">
+                <h3>学习进度</h3>
+                <div class="stat-item">
+                    <span class="stat-label">已看影片</span>
+                    <span class="stat-value" id="watched-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">总影片数</span>
+                    <span class="stat-value" id="total-films">0</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <span class="progress-text" id="progress-text">0%</span>
+            </div>
+
+            <div class="export-panel">
+                <h3>数据导出</h3>
+                <button class="export-btn" onclick="exportToJSON()">导出 JSON</button>
+                <button class="export-btn" onclick="exportToExcel()">导出 Excel</button>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部搜索栏 -->
+            <header class="top-bar">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="搜索导演、影片、演员...">
+                    <button class="search-btn" onclick="performSearch()">🔍</button>
+                </div>
+                <div class="filter-chips">
+                    <select id="filter-country" onchange="applyFilters()">
+                        <option value="">所有国家</option>
+                    </select>
+                    <select id="filter-genre" onchange="applyFilters()">
+                        <option value="">所有类型</option>
+                    </select>
+                    <select id="filter-decade" onchange="applyFilters()">
+                        <option value="">所有年代</option>
+                    </select>
+                    <select id="filter-movement" onchange="applyFilters()">
+                        <option value="">所有流派</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- 仪表盘视图 -->
+            <section id="view-dashboard" class="view active">
+                <h2>学习仪表盘</h2>
+                <div class="dashboard-grid">
+                    <div class="dash-card">
+                        <h3>本月目标</h3>
+                        <div class="monthly-goal">
+                            <span class="goal-current" id="monthly-watched">0</span>
+                            <span class="goal-separator">/</span>
+                            <span class="goal-target" id="monthly-target">8</span>
+                            <span class="goal-label">部影片</span>
+                        </div>
+                    </div>
+                    <div class="dash-card">
+                        <h3>导演完成度</h3>
+                        <div id="director-completion"></div>
+                    </div>
+                    <div class="dash-card wide">
+                        <h3>最近观看</h3>
+                        <div id="recent-watched"></div>
+                    </div>
+                    <div class="dash-card wide">
+                        <h3>推荐观看</h3>
+                        <div id="recommendations"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 导演库视图 -->
+            <section id="view-directors" class="view">
+                <h2>导演库 <span class="count" id="directors-count"></span></h2>
+                <div class="directors-grid" id="directors-grid"></div>
+            </section>
+
+            <!-- 影片库视图 -->
+            <section id="view-films" class="view">
+                <h2>影片库 <span class="count" id="films-count"></span></h2>
+                <div class="films-grid" id="films-grid"></div>
+            </section>
+
+            <!-- 观影计划视图 -->
+            <section id="view-plan" class="view">
+                <h2>月度观影计划</h2>
+                <div class="plan-controls">
+                    <button onclick="generateMonthlyPlan()">生成本月计划</button>
+                    <select id="plan-focus">
+                        <option value="balanced">均衡学习</option>
+                        <option value="director">专注单一导演</option>
+                        <option value="movement">专注电影流派</option>
+                        <option value="country">专注国别电影</option>
+                    </select>
+                </div>
+                <div class="monthly-plan" id="monthly-plan"></div>
+            </section>
+
+            <!-- 奖项筛选视图 -->
+            <section id="view-awards" class="view">
+                <h2>按奖项筛选</h2>
+                <div class="awards-tabs">
+                    <button class="award-tab active" data-award="oscar">奥斯卡</button>
+                    <button class="award-tab" data-award="cannes">戛纳</button>
+                    <button class="award-tab" data-award="venice">威尼斯</button>
+                    <button class="award-tab" data-award="berlin">柏林</button>
+                    <button class="award-tab" data-award="golden-globe">金球奖</button>
+                </div>
+                <div class="awards-content" id="awards-content"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 影片详情模态框 -->
+    <div class="modal" id="film-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- 导演详情模态框 -->
+    <div class="modal" id="director-modal">
+        <div class="modal-content large">
+            <button class="modal-close" onclick="closeDirectorModal()">&times;</button>
+            <div class="modal-body" id="director-modal-body"></div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
