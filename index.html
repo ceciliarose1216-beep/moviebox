@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>电影学习数据库 - Film Study Database</title>
+    <title>电影学习数据库</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -11,27 +11,38 @@
         <!-- 侧边栏 -->
         <aside class="sidebar">
             <div class="logo">
-                <h1>🎬 电影学习库</h1>
-                <p class="subtitle">Film Study Database</p>
+                <h1>FILM STUDY</h1>
             </div>
 
             <nav class="main-nav">
                 <button class="nav-btn active" data-view="dashboard">
-                    <span class="icon">📊</span> 仪表盘
+                    <span class="icon">&#9632;</span> 仪表盘
                 </button>
                 <button class="nav-btn" data-view="directors">
-                    <span class="icon">🎬</span> 导演库
+                    <span class="icon">&#9733;</span> 导演库
                 </button>
                 <button class="nav-btn" data-view="films">
-                    <span class="icon">🎞️</span> 影片库
+                    <span class="icon">&#9650;</span> 影片库
                 </button>
                 <button class="nav-btn" data-view="plan">
-                    <span class="icon">📅</span> 观影计划
+                    <span class="icon">&#9670;</span> 观影计划
                 </button>
                 <button class="nav-btn" data-view="awards">
-                    <span class="icon">🏆</span> 奖项筛选
+                    <span class="icon">&#9830;</span> 奖项筛选
                 </button>
             </nav>
+
+            <!-- 用户面板 -->
+            <div class="user-panel" id="user-panel">
+                <div class="user-info" id="user-info" style="display: none;">
+                    <div class="user-avatar" id="user-avatar">用</div>
+                    <div class="user-details">
+                        <div class="user-name" id="user-name">用户名</div>
+                        <div class="user-status" id="user-status">普通会员</div>
+                    </div>
+                </div>
+                <button class="login-btn" id="login-btn" onclick="openLoginModal()">登录 / 注册</button>
+            </div>
 
             <div class="stats-panel">
                 <h3>学习进度</h3>
@@ -43,10 +54,12 @@
                     <span class="stat-label">总影片数</span>
                     <span class="stat-value" id="total-films">0</span>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill"></div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <span class="progress-text" id="progress-text">0%</span>
                 </div>
-                <span class="progress-text" id="progress-text">0%</span>
             </div>
 
             <div class="export-panel">
@@ -62,7 +75,7 @@
             <header class="top-bar">
                 <div class="search-box">
                     <input type="text" id="search-input" placeholder="搜索导演、影片、演员...">
-                    <button class="search-btn" onclick="performSearch()">🔍</button>
+                    <button class="search-btn" onclick="performSearch()">搜索</button>
                 </div>
                 <div class="filter-chips">
                     <select id="filter-country" onchange="applyFilters()">
@@ -148,6 +161,33 @@
                 <div class="awards-content" id="awards-content"></div>
             </section>
         </main>
+    </div>
+
+    <!-- 登录模态框 -->
+    <div class="modal login-modal" id="login-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+            <div class="login-header">
+                <h2 id="login-title">欢迎回来</h2>
+                <p id="login-subtitle">登录您的账户</p>
+            </div>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="login-name">用户名</label>
+                    <input type="text" id="login-name" placeholder="请输入用户名" required>
+                </div>
+                <div class="form-group" id="email-group" style="display: none;">
+                    <label for="login-email">邮箱</label>
+                    <input type="email" id="login-email" placeholder="请输入邮箱">
+                </div>
+                <button type="submit" class="login-submit" id="login-submit-btn">登录</button>
+            </form>
+            <div class="login-footer">
+                <p id="login-toggle">
+                    还没有账户？<a href="#" onclick="toggleLoginMode(); return false;">立即注册</a>
+                </p>
+            </div>
+        </div>
     </div>
 
     <!-- 影片详情模态框 -->
